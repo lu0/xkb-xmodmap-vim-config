@@ -180,8 +180,8 @@ xkb_symbols "latam_custom" {
     };
     key <AB01> {
         type[group1]= "FOUR_LEVEL_SEMIALPHABETIC",
-        symbols[Group1]= [            less,         greater,        NoSymbol,        NoSymbol ],
-        symbols[Group2]= [       parenleft,      parenright ]
+        symbols[Group1]= [               z,               Z,        NoSymbol,        NoSymbol ],
+        symbols[Group2]= [               0,               0 ]
     };
     key <AB02> {
         type[group1]= "FOUR_LEVEL_SEMIALPHABETIC",

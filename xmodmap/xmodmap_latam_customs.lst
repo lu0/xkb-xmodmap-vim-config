@@ -42,6 +42,11 @@ keysym o = o O End End End
 keysym Left = Prior
 keysym Right = Next
 
+! Add parenthesis to AltGr + <> and disable the default ones ------------------
+keysym less = less greater parenleft parenright
+keysym 8 = 8 NoSymbol 8 NoSymbol bracketleft trademark bracketleft trademark 8 NoSymbol bracketleft trademark
+keysym 9 = 9 NoSymbol 9 NoSymbol bracketright plusminus bracketright plusminus 9 NoSymbol bracketright plusminus
+
 ! Hidden numbers --------------------------------------------------------------
 keysym z = z Z 0 0
 keysym x = x X 1 1
@@ -53,12 +58,6 @@ keysym f = f F 6 6
 keysym w = w W 7 7
 keysym e = e E 8 8
 keysym r = r R 9 9
-
-! Add parenthesis to AltGr + <> and disable the default ones ------------------
-keysym less = less greater parenleft parenright
-keysym 8 = 8 NoSymbol 8 NoSymbol bracketleft trademark bracketleft trademark 8 NoSymbol bracketleft trademark
-keysym 9 = 9 NoSymbol 9 NoSymbol bracketright plusminus bracketright plusminus 9 NoSymbol bracketright plusminus
-
 
 ! Fix level3 characters I use (AltGr + key) -----------------------------------
 ! At (@)
