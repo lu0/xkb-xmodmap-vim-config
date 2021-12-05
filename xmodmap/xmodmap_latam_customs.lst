@@ -1,0 +1,77 @@
+! -----------------------------------------------------------------------------
+!  Xmodmap config I use for media and vim-like keys 
+!   on Thinkpad Keyboards with latin american layouts
+!
+! Save default config for reference:
+!   setxkbmap latam
+!   xmodmap -pke > xmodmap_latam_defaults.lst
+!
+! See current keycodes with xev
+!
+! Test this custom config with xmodmap:
+!   ln -srf xmodmap_latam_customs.lst ~/.xmodmap_latam_customs.lst
+!   xmodmap ~/.xmodmap_latam_customs.lst
+! -----------------------------------------------------------------------------
+
+! Media keys ------------------------------------------------------------------
+
+! Music
+keysym Up = XF86AudioPlay uparrow
+keysym Prior = XF86AudioPrev Prior
+keysym Next = XF86AudioNext Next
+
+! Screenshots
+! I use PrtScr as the context Menu key,
+! I've set every keybinding of type <modifier>+PrtScr to <modifier>+Menu
+keysym Print = Menu NoSymbol Menu
+
+! Vim-like keys (AltGr + Key) -------------------------------------------------
+
+! Use AltGr as the modifier key
+keycode 108 = Mode_switch NoSymbol ISO_Level3_Shift ISO_Level3_Shift
+
+! Hidden arrows and navigation
+keysym h = h H Left Left Left
+keysym l = l L Right Right Right
+keysym k = k K Up Up Up
+keysym j = j J Down Down Down 
+keysym i = i I Home Home Home
+keysym o = o O End End End
+
+! Use Left and Right arrows as PgUp and PgDn
+keysym Left = Prior
+keysym Right = Next
+
+! Hidden numbers --------------------------------------------------------------
+keysym z = z Z 0 0
+keysym x = x X 1 1
+keysym c = c C 2 2
+keysym v = v V 3 3
+keysym s = s S 4 4
+keysym d = d D 5 5
+keysym f = f F 6 6
+keysym w = w W 7 7
+keysym e = e E 8 8
+keysym r = r R 9 9
+
+! Add parenthesis to AltGr + <> and disable the default ones ------------------
+keysym less = less greater parenleft parenright
+keysym 8 = 8 NoSymbol 8 NoSymbol bracketleft trademark bracketleft trademark 8 NoSymbol bracketleft trademark
+keysym 9 = 9 NoSymbol 9 NoSymbol bracketright plusminus bracketright plusminus 9 NoSymbol bracketright plusminus
+
+
+! Fix level3 characters I use (AltGr + key) -----------------------------------
+! At (@)
+keysym q = q Q at Greek_OMEGA at Greek_OMEGA at
+
+! Hat (^)
+keysym braceright = braceright bracketright dead_grave braceright dead_grave braceright dead_grave
+
+! Backticks (`)
+keysym braceleft = braceleft bracketleft dead_circumflex braceleft dead_circumflex braceleft dead_circumflex
+
+! Tilde (~)
+keysym plus = plus asterisk asciitilde dead_macron asciitilde
+
+! Backslash (\)
+keysym apostrophe = apostrophe question backslash questiondown backslash questiondown backslash
