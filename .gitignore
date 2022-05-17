@@ -1,2 +1,3 @@
 assets/*.kra*
 assets/*~*
+.temp_custom_xkb_layout.xkb

@@ -1,22 +1,63 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Put your xmodmap config in xmodmap/xmodmap_latam_defaults.lst
-# Run with sudo
+#
+# This scripts converts a custom xmodmap configuration file
+# into a system-wide XKB layout and applies it.
+#
 
-setxkbmap -option && setxkbmap latam && \
-xmodmap -pke > xmodmap/xmodmap_latam_defaults.lst && \
-xkbcomp -xkb $DISPLAY xkb/latam_defaults.xkb && \
-setxkbmap -option caps:swapescape && \
-xmodmap xmodmap/xmodmap_latam_customs.lst && \
-xkbcomp -xkb $DISPLAY xkb/latam_custom.xkb && \
-setxkbmap latam && \
-sed -n '/^xkb_symbols/, /^xkb_/p' xkb/latam_custom.xkb | head -n -1 > xkb/latam_custom_symbols.xkb && \
-prev_header=$(head -1 xkb/latam_custom_symbols.xkb) && \
-lang=$(setxkbmap -query | grep layout | cut -d ":" -f 2 | xargs) && \
-includes=$(echo $prev_header |  cut -d '"' -f2) && \
-echo "xkb_symbols \"${lang}_custom\" {" > tmp.xkb && \
-echo -e "\tinclude \"${includes}\"" >> tmp.xkb && \
-tail -n +2 xkb/latam_custom_symbols.xkb >> tmp.xkb && \
-mv tmp.xkb xkb/latam_custom_symbols.xkb && \
-ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custom && \
+set -euo pipefail
+
+# Reset layout and remap options to the default ones.
+# i.e. no remaps, latam layout.
+layout::apply_defaults() {
+    setxkbmap -option && setxkbmap latam
+}
+layout::apply_defaults
+
+# Dump this default layout as an xmodmap file
+xmodmap -pke > xmodmap/xmodmap_latam_defaults.lst
+
+# Dump this default layout as an XKB file
+xkbcomp -xkb $DISPLAY xkb/latam_defaults.xkb
+
+# Apply any remappings you use, i.e. Caps Lock <-> Escape, for me
+setxkbmap -option caps:swapescape
+
+# Apply the customized layout using the custom, readable, xmodmap config file,
+# This may take a minute or so.
+xmodmap xmodmap/xmodmap_latam_customs.lst
+
+# Dump the just-applied customized layout as an XKB file
+xkbcomp -xkb $DISPLAY xkb/latam_custom.xkb
+
+# Get the symbols portion of the applied layout and dump it into a new xkb file.
+xkb_symbols_portion=$(
+    sed -n '/^xkb_symbols/, /^xkb_/p' xkb/latam_custom.xkb | head -n-1
+)
+echo "${xkb_symbols_portion}" | sudo tee xkb/latam_custom_symbols.xkb
+
+# Extract remap includes, defined between quotes in xkb_symbols's header
+remaps_includes=$(echo "$xkb_symbols_portion" | head -n1 | cut -d'"' -f2)
+
+# Get the name the custom layout is based on
+setxkbmap latam # Reset layout to the default one
+default_layout_name=$(setxkbmap -query | grep layout | cut -d":" -f2 | xargs)
+
+temp_file=.temp_custom_xkb_layout.xkb
+
+# Build the xkb-like header with the custom information
+echo "xkb_symbols \"${default_layout_name}_custom\" {" > ${temp_file}
+echo -e "\tinclude \"${remaps_includes}\"" >> ${temp_file}
+
+# Copy generated symbols (except the header).
+tail -n +2 xkb/latam_custom_symbols.xkb >> ${temp_file}
+
+# Link the generated XKB file
+/usr/bin/env mv -f ${temp_file} xkb/latam_custom_symbols.xkb
+sudo ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custom
+
+# Reset layout and remap options to the default ones, again
+layout::apply_defaults
+
+# Apply the new, custom, XKB configuration
 setxkbmap latam_custom
