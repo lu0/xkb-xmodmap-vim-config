@@ -61,3 +61,13 @@ layout::apply_defaults
 
 # Apply the new, custom, XKB configuration
 setxkbmap latam_custom
+
+# Wait for user confirmation
+seconds=15
+sleep ${seconds}
+read -t ${seconds} -p "Hit ENTER to keep this configuration,
+    or wait for a moment to restore your previous configuration" \
+    || { echo "Restoring previous configuration..." && layout::apply_defaults ;}
+
+echo "Layout saved, you can reapply it with:"
+echo -e "\tsetxkbmap ${default_layout_name}_custom"
