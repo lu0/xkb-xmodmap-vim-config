@@ -1,16 +1,11 @@
 ! -----------------------------------------------------------------------------
-!  Xmodmap config I use for media and vim-like keys 
+!  Xmodmap config I use to remap media and navigation keys to vim-like keys
 !   on Thinkpad Keyboards with latin american layouts
-!
-! Save default config for reference:
-!   setxkbmap latam
-!   xmodmap -pke > xmodmap_latam_defaults.lst
 !
 ! See current keycodes with xev
 !
 ! Test this custom config with xmodmap:
-!   ln -srf xmodmap_latam_customs.lst ~/.xmodmap_latam_customs.lst
-!   xmodmap ~/.xmodmap_latam_customs.lst
+!   xmodmap xmodmap_latam_customs.lst
 ! -----------------------------------------------------------------------------
 
 ! Media keys ------------------------------------------------------------------
