@@ -14,7 +14,8 @@ file to a system-wide `xkb` layout.
 - [Vim-like XKB/xmodmap configuration](#vim-like-xkbxmodmap-configuration)
   - [Which keys do I remap?"](#which-keys-do-i-remap)
   - [Convert `xmodmap` to `xkb` files](#convert-xmodmap-to-xkb-files)
-    - [Create a new layout](#create-a-new-layout)
+    - [Create a new custom layout](#create-a-new-custom-layout)
+    - [Set new layout as a variant of the base one](#set-new-layout-as-a-variant-of-the-base-one)
 
 ## Which keys do I remap?"
 The following pictures give a good insight of the custom layout I use, the first
@@ -39,8 +40,9 @@ the system):
     ./xmodmap-to-xkb-layout.sh
     ```
 
-    Keep reading to do this manually or for other layouts, replace each `latam` you see
-    in all steps with the name of the layout your custom layout is based upon.
+    Keep reading to do this manually or with other base layouts, replace each
+    `latam` you see in all steps with the name of the layout your custom layout
+    is based upon.
 
     You can see the complete list of layout with:
     ```sh
@@ -86,7 +88,7 @@ Detailed steps:
 
 1. Then you can use the previous command (with absolute path) on a startup script to apply your custom keymap on login.
 
-### Create a new layout
+### Create a new custom layout
 You can further convert your custom `xkb` file into an `xkb symbols` file to let `XKB` recognize it as a new layout.
 
 1. Get the symbols portion of the complete `xkb` file.
@@ -110,3 +112,53 @@ You can further convert your custom `xkb` file into an `xkb symbols` file to let
     ```
 
 1. Then you can run `setxkbmap latam_custom` on startup.
+
+### Set new layout as a variant of the base one
+You can go even further and convert your custom `xkb` layout into a variant of
+the layout it's based on.
+
+1. Open `/usr/share/X11/xkb/symbols/latam` and add the following snippet to the
+bottom of the file:
+    ```perl
+    partial alphanumeric_keys
+    xkb_symbols "vimlikekeys" {
+        include "latam_custom"
+        name[group1]="Spanish (Latin American, Vim-like keys)";
+    };
+    ```
+
+1. Open `/usr/share/X11/xkb/rules/evdev.xml` and add the following snippet
+inside between tags `<varianList>` of the layout you based your custom
+layout on, in my case, `latam`:
+    ```xml
+    <!-- ... -->
+    <layout>
+     <configItem>
+         <name>latam</name>
+         <shortDescription>es</shortDescription>
+         <description>Spanish (Latin American)</description>
+         <!-- ... -->
+     </configItem>
+     <variantList>
+         <!-- Add this snippet: -->
+         <variant>
+         <configItem>
+             <name>vimlikekeys</name>
+             <description>Spanish (Latin American, Vim-like keys)</description>
+         </configItem>
+         </variant>
+         <!-- End of snippet -->
+         <!-- ... -->
+     </variantList>
+    <!-- ... -->
+    </layout>
+    ```
+
+1. Then you will be able to select it in the keyboard settings of your specific
+Desktop Environment, `Cinnamon` in my case:
+
+    ![Selection of variant in Cinnamon's keyboard settings](assets/layout-variant-selection.png)
+
+1. To make it the default layout, remove other layouts from the list.
+
+    ![New layout as the default one](assets/default-layout.png)  

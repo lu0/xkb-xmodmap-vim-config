@@ -59,15 +59,31 @@ sudo ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custo
 # Reset layout and remap options to the default ones, again
 layout::apply_defaults
 
+# Create variant from new custom layout
+variant_name=vimlikekeys
+variant_section="
+// Latin American Spanish Vim-Like mapping (by Lu0), customized to
+// keep navigation, media and number keys near the home row
+partial alphanumeric_keys
+xkb_symbols \"${variant_name}\" {
+	include \"${default_layout_name}_custom\"
+
+    name[group1]=\"Spanish (Latin American, Vim-like keys)\";
+};
+"
+sudo cp /usr/share/X11/xkb/symbols/latam /usr/share/X11/xkb/symbols/latam_orig # backup
+echo -n "${variant_section}" | sudo tee -a /usr/share/X11/xkb/symbols/latam
+
 # Apply the new, custom, XKB configuration
-setxkbmap latam_custom
+setxkbmap latam vimlikekeys
 
 # Wait for user confirmation
 seconds=15
 sleep ${seconds}
-read -t ${seconds} -p "Hit ENTER to keep this configuration,
+read -t ${seconds} -p "
+    Hit ENTER to keep this configuration,
     or wait for a moment to restore your previous configuration" \
     || { echo "Restoring previous configuration..." && layout::apply_defaults ;}
 
 echo "Layout saved, you can reapply it with:"
-echo -e "\tsetxkbmap ${default_layout_name}_custom"
+echo -e "\tsetxkbmap ${default_layout_name} ${variant_name}"
