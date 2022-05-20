@@ -12,12 +12,13 @@ detailed instructions on how to convert from an `xmodmap` `*.lst` configuration
 file to a system-wide `xkb` layout.
 
 - [Vim-like XKB/xmodmap configuration](#vim-like-xkbxmodmap-configuration)
-  - [Which keys do I remap?"](#which-keys-do-i-remap)
+  - [Which keys do I remap?](#which-keys-do-i-remap)
   - [Convert `xmodmap` to `xkb` files](#convert-xmodmap-to-xkb-files)
-    - [Create a new custom layout](#create-a-new-custom-layout)
-    - [Set new layout as a variant of the base one](#set-new-layout-as-a-variant-of-the-base-one)
+  - [Create a new custom layout](#create-a-new-custom-layout)
+    - [Set the layout as a variant for the base one](#set-the-layout-as-a-variant-for-the-base-one)
+    - [Make the layout the default one](#make-the-layout-the-default-one)
 
-## Which keys do I remap?"
+## Which keys do I remap?
 The following pictures give a good insight of the custom layout I use, the first
 one shows the default layout and the second one shows the one I use. I basically
 added vim-like keys (arrows, <kbd>Home</kbd><kbd>End</kbd> and
@@ -32,26 +33,25 @@ keys are accessible by using <kbd>AltGr</kbd> as the modifier key.
 
 
 - **Note**: If you're already using a Latin American keyboard, you may want to
-go ahead and apply my custom layout **automatically** by running the script I
-made (will prompt you for your password to save the generated xkb layout into
-the system):
+go ahead and test my custom layout by running the following script, will prompt you
+for your password to save the generated xkb layout into the system (it may take
+a minute or so):
 
     ```language
     ./xmodmap-to-xkb-layout.sh
     ```
 
-    Keep reading to do this manually or with other base layouts, replace each
-    `latam` you see in all steps with the name of the layout your custom layout
-    is based upon.
-
-    You can see the complete list of layout with:
-    ```sh
-    sed '/^! layout$/, /^ *$/!d; //d' /usr/share/X11/xkb/rules/base.lst
-    ```
+    Keep reading to do this manually or with other base layouts.
 
 ## Convert `xmodmap` to `xkb` files
 
-Detailed steps:
+Replace each occurrence of `latam` from all steps with the name of the layout
+your custom layout is based upon.
+
+You can see the complete list of layouts with:
+```sh
+sed '/^! layout$/, /^ *$/!d; //d' /usr/share/X11/xkb/rules/base.lst
+```
 
 1. Restore the default configuration.
     ```sh
@@ -88,7 +88,7 @@ Detailed steps:
 
 1. Then you can use the previous command (with absolute path) on a startup script to apply your custom keymap on login.
 
-### Create a new custom layout
+## Create a new custom layout
 You can further convert your custom `xkb` file into an `xkb symbols` file to let `XKB` recognize it as a new layout.
 
 1. Get the symbols portion of the complete `xkb` file.
@@ -111,13 +111,13 @@ You can further convert your custom `xkb` file into an `xkb symbols` file to let
     ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custom
     ```
 
-1. Then you can run `setxkbmap latam_custom` on startup.
+1. Then you can run `setxkbmap latam_custom` to apply the new layout.
 
-### Set new layout as a variant of the base one
+### Set the layout as a variant for the base one
 You can go even further and convert your custom `xkb` layout into a variant of
 the layout it's based on.
 
-1. Open `/usr/share/X11/xkb/symbols/latam` and add the following snippet to the
+- Open `/usr/share/X11/xkb/symbols/latam` and add the following snippet to the
 bottom of the file:
     ```perl
     partial alphanumeric_keys
@@ -127,7 +127,11 @@ bottom of the file:
     };
     ```
 
-1. Open `/usr/share/X11/xkb/rules/evdev.xml` and add the following snippet
+Now you can just run `setxkbmap latam vimlikekeys` to apply the layout custom,
+of follow the next step to make the layout available in the Keyboard settings
+of your Desktop Environment.
+
+- Open `/usr/share/X11/xkb/rules/evdev.xml` and add the following snippet
 inside between tags `<varianList>` of the layout you based your custom
 layout on, in my case, `latam`:
     ```xml
@@ -154,11 +158,30 @@ layout on, in my case, `latam`:
     </layout>
     ```
 
-1. Then you will be able to select it in the keyboard settings of your specific
+Then you will be able to select the layout it in the keyboard settings of the
 Desktop Environment, `Cinnamon` in my case:
 
-    ![Selection of variant in Cinnamon's keyboard settings](assets/layout-variant-selection.png)
+![Selection of variant in Cinnamon's keyboard settings](assets/layout-variant-selection.png)
 
-1. To make it the default layout, remove other layouts from the list.
 
-    ![New layout as the default one](assets/default-layout.png)  
+### Make the layout the default one
+
+You can now apply the custom layout by running either `setxkbmap latam_custom`
+or `setxkbmap latam vimlikekeys`, but newly plugged keyboards, TTYs, Display
+Managers (logging screens), etc., will fallback to the default
+layout. Follow the next steps to make the new custom layout the default
+one.
+
+1. Set the layout and variant of the keyboard in the system-wide configuration file.
+
+    ```sh
+    echo -n '
+    XKBLAYOUT="latam"
+    XKBVARIANT="vimlikekeys"
+    ' | sudo tee -a /etc/default/keyboard
+    ```
+
+2. Reboot to apply the changes system-wide.
+
+
+*Note:* This works for debian-based distros.

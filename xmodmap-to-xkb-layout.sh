@@ -77,16 +77,19 @@ echo -n "${variant_section}" | sudo tee -a /usr/share/X11/xkb/symbols/latam
 # Apply the new, custom, XKB configuration
 setxkbmap latam vimlikekeys
 
-# Wait for user confirmation
+# Wait for user confirmation to persist the layout
 seconds=15
 sleep ${seconds}
-read -t ${seconds} -p "
-    Hit ENTER to keep this configuration,
-    or wait for a moment to restore your previous configuration" || \
-    {
-        echo -e "\nRestoring previous configuration..." && \
-        layout::apply_defaults ;\
-    }
 
-echo -e "\nLayout saved, you can reapply it with:"
-echo -e "\tsetxkbmap ${default_layout_name} ${variant_name}"
+echo -e "\nHit ENTER to keep this configuration,"
+echo "or WAIT to restore the default one."
+
+if read -t ${seconds}; then
+    echo -e '\nXKBLAYOUT="latam"\nXKBVARIANT="vimlikekeys"' \
+        | sudo tee -a /etc/default/keyboard
+else
+    echo -e "\nRestoring previous configuration..."
+    layout::apply_defaults
+    echo -e "You can reapply the layout with:"
+    echo -e "\tsetxkbmap ${default_layout_name} ${variant_name}"
+fi
