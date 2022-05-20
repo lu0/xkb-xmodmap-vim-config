@@ -82,8 +82,11 @@ seconds=15
 sleep ${seconds}
 read -t ${seconds} -p "
     Hit ENTER to keep this configuration,
-    or wait for a moment to restore your previous configuration" \
-    || { echo "Restoring previous configuration..." && layout::apply_defaults ;}
+    or wait for a moment to restore your previous configuration" || \
+    {
+        echo -e "\nRestoring previous configuration..." && \
+        layout::apply_defaults ;\
+    }
 
-echo "Layout saved, you can reapply it with:"
+echo -e "\nLayout saved, you can reapply it with:"
 echo -e "\tsetxkbmap ${default_layout_name} ${variant_name}"
