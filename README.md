@@ -53,6 +53,11 @@ You can see the complete list of layouts with:
 sed '/^! layout$/, /^ *$/!d; //d' /usr/share/X11/xkb/rules/base.lst
 ```
 
+1. Install xkb utilities
+   ```sh
+   sudo apt install x11-xkb-utils
+   ```
+   
 1. Restore the default configuration.
     ```sh
     setxkbmap -option && setxkbmap latam
@@ -108,7 +113,12 @@ You can further convert your custom `xkb` file into an `xkb symbols` file to let
     
 1. Create a link to the symbols file into the xkb config folder:
     ```sh
-    ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custom
+    sudo ln -srf xkb/latam_custom_symbols.xkb /usr/share/X11/xkb/symbols/latam_custom
+    ```
+    
+1. Restore the default configuration, again.
+    ```sh
+    setxkbmap -option && setxkbmap latam
     ```
 
 1. Then you can run `setxkbmap latam_custom` to apply the new layout.
@@ -123,7 +133,7 @@ bottom of the file:
     partial alphanumeric_keys
     xkb_symbols "vimlikekeys" {
         include "latam_custom"
-        name[group1]="Spanish (Latin American, Vim-like keys)";
+        name[Group1]="Spanish (Latin American, Vim-like keys)";
     };
     ```
 
